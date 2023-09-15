@@ -54,7 +54,9 @@ export class DetailsComponent {
 
   constructor(private router: ActivatedRoute,
     private housingService: HousingService){
-    this.housingLocation = housingService.getHousingLocationById(Number(router.snapshot.params['id']));
+    housingService.getHousingLocationById(Number(router.snapshot.params['id'])).then(
+      (housingLocation) => this.housingLocation = housingLocation
+    );
   }
 
   submitApplication() {

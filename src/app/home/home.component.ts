@@ -11,12 +11,12 @@ import { HousingService } from '../housing.service';
   template: `
     <section>
       <form>
-        <input type="text" placeholder="Filter by city">
-        <button class="primary" type="button">Search</button>
+        <input type="text" placeholder="Filter by city" #cityFilter>
+        <button class="primary" type="button" (click)="filteredByCity(cityFilter.value)">Search</button>
       </form>
     </section>
     <section class="results">
-      <app-housing-location *ngFor="let housingLocation of housingLocationList" [housingLocation] ="housingLocation"></app-housing-location>
+      <app-housing-location *ngFor="let housingLocation of housingLocationFilter" [housingLocation] ="housingLocation"></app-housing-location>
     </section>
   `,
   styleUrls: ['./home.component.css'],
@@ -24,8 +24,23 @@ import { HousingService } from '../housing.service';
 export class HomeComponent {
   readonly baseUrl = 'https://angular.io/assets/images/tutorials/faa';
   housingLocationList: HousingLocation[] = [];
+  housingLocationFilter: HousingLocation[] = [];
 
   constructor(private housingService: HousingService){
-    this.housingLocationList = this.housingService.getAllHousingLocations();
+    this.housingService.getAllHousingLocations().then(
+      (housingLocationList: HousingLocation[]) => {
+        this.housingLocationFilter = housingLocationList;
+        this.housingLocationList = housingLocationList;
+      }
+    )
+  }
+
+  filteredByCity(text:string) : void {
+    if(!text){
+      this.housingLocationFilter = this.housingLocationList;
+    }
+    this.housingLocationFilter = this.housingLocationList.filter(
+      housing => housing?.city.toLowerCase().includes(text.toLowerCase())
+    );
   }
 }
